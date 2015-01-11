@@ -1,0 +1,28 @@
+{
+  "name": "dogwood",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Bob Yexley",
+  "license": "MIT",
+  "dependencies": {
+    "credential": "0.2.5",
+    "express": "4.10.7",
+    "express-session": "1.10.1",
+    "iam": "0.1.0",
+    "lodash": "2.4.1"
+  },
+  "devDependencies": {
+    "grunt": "0.4.5",
+    "grunt-contrib-copy": "0.7.0",
+    "grunt-contrib-jshint": "0.10.0",
+    "grunt-contrib-sass": "0.8.1",
+    "grunt-contrib-watch": "0.6.1",
+    "jshint-stylish": "1.0.0",
+    "load-grunt-config": "0.16.0",
+    "time-grunt": "1.0.0"
+  }
+}
