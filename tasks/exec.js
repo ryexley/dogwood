@@ -12,9 +12,12 @@ var migrateOptions = {
     migrationsConfig: dbConfigFile
 };
 
-var createMigrationCommand = "<%= migrator %> create <%= name %> --env <%= env %> --migrations-dir <%= migrationsDir %> --config <%= migrationsConfig %>";
-var migrateUpCommand = "<%= migrator %> up --env <%= env %> --migrations-dir <%= migrationsDir %> --config <%= migrationsConfig %>";
-var migrateDownCommand = "<%= migrator %> down --env <%= env %> --migrations-dir <%= migrationsDir %> --config <%= migrationsConfig %>";
+var createMigrationCommand = "{migrator} create {name} --env {env} --migrations-dir {migrationsDir} --config {migrationsConfig}";
+var migrateUpCommand = "{migrator} up --env {env} --migrations-dir {migrationsDir} --config {migrationsConfig}";
+var migrateDownCommand = "{migrator} down --env {env} --migrations-dir {migrationsDir} --config {migrationsConfig}";
+
+// set lodash template interpolation
+_.templateSettings.interpolate = /{([\s\S]+?)}/g;
 
 module.exports = function (grunt, options) {
 

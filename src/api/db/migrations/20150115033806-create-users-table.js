@@ -5,11 +5,15 @@ exports.up = function(db, callback) {
     db.createTable("users", {
         ifNotExists: true,
         columns: {
-            id: { type: "int", primaryKey: true, autoIncrement: true },
+            id: { type: "bigint", primaryKey: true, autoIncrement: true },
             username: { type: "string", length: 255, notNull: true },
-            password: { type: "string", length: 1024, notNull: true },
+            password: { type: "string", length: 255, notNull: true },
+            email: { type: "string", length: 255, notNull: true },
             firstName: { type: "string", length: 255 },
-            lastName: { type: "string", length: 255 }
+            lastName: { type: "string", length: 255 },
+            isActive: { type: "boolean", notNull: true, defaultValue: true },
+            created: { type: "timestamp", notNull: true, defaultValue: new String("(current_timestamp at time zone 'utc')") },
+            updated: { type: "timestamp", notNull: true, defaultValue: new String("(current_timestamp at time zone 'utc')") }
         }
     }, callback);
 };
