@@ -6,7 +6,7 @@ var router = express.Router();
 var data = require("../data");
 
 router.get("/login", function (req, res) {
-    data.users.findByUsername("foo");
+    data.users.create("foo");
     res.json({ message: "Dogwood auth login" });
 });
 
