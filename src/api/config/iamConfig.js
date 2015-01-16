@@ -1,3 +1,5 @@
+"use strict";
+
 var User = require("../model/user");
 
 var api = {

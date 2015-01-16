@@ -39,6 +39,8 @@ module.exports = function (grunt, options) {
         grunt.task.run("exec:migrate-down");
     });
 
+    // TODO: implement this: https://github.com/unknownexception/grunt-db-migrate#clean-db
+
     return {
         "migration-create": _.template(createMigrationCommand, _.extend(migrateOptions, { name: grunt.option("name") })),
         "migrate-up": _.template(migrateUpCommand, migrateOptions),

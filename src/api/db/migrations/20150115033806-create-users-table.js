@@ -1,5 +1,6 @@
-var dbm = require('db-migrate');
-var type = dbm.dataType;
+// var dbm = require("db-migrate");
+// var type = dbm.dataType;
+"use strict";
 
 exports.up = function(db, callback) {
     db.createTable("users", {
@@ -12,8 +13,8 @@ exports.up = function(db, callback) {
             firstName: { type: "string", length: 255 },
             lastName: { type: "string", length: 255 },
             isActive: { type: "boolean", notNull: true, defaultValue: true },
-            created: { type: "timestamp", notNull: true, defaultValue: new String("(current_timestamp at time zone 'utc')") },
-            updated: { type: "timestamp", notNull: true, defaultValue: new String("(current_timestamp at time zone 'utc')") }
+            created: { type: "timestamp", notNull: true, defaultValue: /* jshint -W053 */ new String("(current_timestamp at time zone 'utc')") }, /* jshint +W053 */
+            updated: { type: "timestamp", notNull: true, defaultValue: /* jshint -W053 */ new String("(current_timestamp at time zone 'utc')") } /* jshint +W053 */
         }
     }, callback);
 };

@@ -1,6 +1,8 @@
 /* https://github.com/derickbailey/iam/tree/master/demo */
 /* https://github.com/ericelliott/credential */
 
+"use strict";
+
 var express = require("express");
 var logger = require("morgan");
 var cookieParser = require("cookie-parser");

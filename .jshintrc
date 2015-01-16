@@ -25,7 +25,7 @@
     "quotmark": true,   //enforces the consistency of quotation marks used throughout your code
     "undef": true,   //prohibits the use of explicitly undeclared variables
     "unused": true,   //warns when you define and never use your variables
-    "strict": false,   //requires all functions to run in ECMAScript 5's strict mode
+    "strict": true,   //requires all functions to run in ECMAScript 5's strict mode
     "trailing": true,  //makes it an error to leave a trailing whitespace in your code
     "maxparams": 12,      //set the max number of formal parameters allowed per function
     "maxdepth": 4,      //control how nested do you want your blocks to be
@@ -73,7 +73,7 @@
     "dojo": false,  //defines globals exposed by the Dojo Toolkit
     "jquery": true,   //defines globals exposed by the jQuery JavaScript library
     "mootools": false,  //defines globals exposed by the MooTools JavaScript framework
-    "node": false,  //defines globals available when your code is running inside of the Node runtime environment
+    "node": true,  //defines globals available when your code is running inside of the Node runtime environment
     "nonstandard": false,  //defines non-standard but widely adopted globals such as `escape` and `unescape`
     "phantom": false,  //defines globals available when your core is running inside of the PhantomJS runtime environment
     "prototypejs": false,  //defines globals exposed by the Prototype JavaScript framework
