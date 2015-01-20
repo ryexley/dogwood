@@ -3,10 +3,16 @@
 var _ = require("lodash");
 
 function User (options) {
+    options = options || {};
+
     this.username = options.username;
     this.password = options.password;
+    this.email = options.email || "";
     this.firstName = options.firstName || "";
     this.lastName = options.lastName || "";
+    this.isActive = options.isActive || true;
+    this.created = options.created || new Date(-8640000000000000);
+    this.updated = options.updated || new Date(-8640000000000000);
 }
 
 _.extend(User, {

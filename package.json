@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "DEBUG=* node ./src/api/bin/api",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/mocha/bin/mocha --reporter spec --bail --check-leaks spec/",
+    "coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -x 'spec/**/*' -- --reporter spec --bail --check-leaks spec/",
+    "show-coverage": "open ./coverage/lcov-report/index.html"
   },
   "author": "Bob Yexley",
   "license": "MIT",
@@ -24,6 +26,7 @@
     "validate.js": "0.3.2"
   },
   "devDependencies": {
+    "chai": "^1.10.0",
     "db-migrate": "0.8.0",
     "grunt": "0.4.5",
     "grunt-contrib-copy": "0.7.0",
@@ -31,8 +34,10 @@
     "grunt-contrib-sass": "0.8.1",
     "grunt-contrib-watch": "0.6.1",
     "grunt-exec": "0.4.6",
+    "istanbul": "0.3.5",
     "jshint-stylish": "1.0.0",
     "load-grunt-config": "0.16.0",
+    "mocha": "2.1.0",
     "time-grunt": "1.0.0"
   }
 }
