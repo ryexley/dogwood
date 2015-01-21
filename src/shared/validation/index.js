@@ -1,7 +1,7 @@
 "use strict";
 
 var debug = require("debug")("validation");
-var util = require("../util");
+var util = require("../../api/util");
 
 var validation = util.loadModuleFromDirectory({
     directory: __dirname,

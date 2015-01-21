@@ -2,6 +2,7 @@ var chai = require("chai");
 var expect = chai.expect;
 var should = chai.should;
 var assert = chai.assert;
+var debug = require("debug")("specs");
 
 var User = require("../src/api/model/user");
 
@@ -59,5 +60,52 @@ describe("User Model", function () {
     it("should have an updated property of the appropriate type", function () {
         expect(_user.updated).to.exist;
         expect(_user.updated).to.be.a("date");
+    });
+
+    describe("Validation", function () {
+        it("should require a username value", function () {
+            var results;
+
+            results = User.validate(_user);
+            expect(results).to.be.undefined();
+
+            _user.username = null;
+
+            results = User.validate(_user);
+            expect(results.username).to.exist;
+        });
+
+        it("should require username to be no less than two characters long", function () {
+            _user.username = "x";
+
+            var results = User.validate(_user);
+            expect(results.username).to.exist;
+        });
+
+        it("should require username to be no longer than 255 characters", function () {
+            _user.username = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv";
+
+            var results = User.validate(_user);
+            expect(results.username).to.exist;
+        });
+
+        it("should require a password value", function () {
+            var results;
+
+            results = User.validate(_user);
+            expect(results).to.be.undefined();
+
+            _user.password = null;
+
+            results = User.validate(_user);
+            expect(results.password).to.exist;
+        });
+
+        it("should require a password to be no less than 8 characters long", function () {
+            _user.password = "test";
+
+            var results = User.validate(_user);
+            expect(results.password).to.exist;
+        });
     });
 });

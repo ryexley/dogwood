@@ -45,7 +45,7 @@ module.exports = function (grunt, options) {
         "migration-create": _.template(createMigrationCommand, _.extend(migrateOptions, { name: grunt.option("name") })),
         "migrate-up": _.template(migrateUpCommand, migrateOptions),
         "migrate-down": _.template(migrateDownCommand, migrateOptions),
-        "run-tests": "npm test",
+        "run-tests": "DEBUG=specs npm test",
         "run-coverage": "npm run coverage"
     };
 

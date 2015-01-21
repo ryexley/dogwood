@@ -1,6 +1,8 @@
 "use strict";
 
 var _ = require("lodash");
+var validate = require("validate.js");
+var validationRules = require("../../shared/validation").users;
 
 function User (options) {
     options = options || {};
@@ -39,6 +41,10 @@ _.extend(User, {
         }
 
         next(null, user);
+    },
+
+    validate: function (target) {
+        return validate(target, validationRules);
     }
 
 });
