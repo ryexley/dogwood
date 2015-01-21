@@ -8,7 +8,7 @@ exports.up = function(db, callback) {
         columns: {
             id: { type: "bigint", primaryKey: true, autoIncrement: true },
             username: { type: "string", length: 255, notNull: true },
-            password: { type: "string", length: 255, notNull: true },
+            password: { type: "string", length: 1024, notNull: true },
             email: { type: "string", length: 255, notNull: true },
             firstName: { type: "string", length: 255 },
             lastName: { type: "string", length: 255 },

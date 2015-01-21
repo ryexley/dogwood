@@ -8,5 +8,9 @@ module.exports = {
     password: {
         presence: true,
         length: { minimum: 8, maximum: 255 }
+    },
+    email: {
+        presence: true,
+        email: true
     }
 };

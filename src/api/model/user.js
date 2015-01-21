@@ -1,8 +1,13 @@
 "use strict";
 
 var _ = require("lodash");
+// var async = require("async");
+var debug = require("debug")("user");
 var validate = require("validate.js");
+var pw = require("credential");
+
 var validationRules = require("../../shared/validation").users;
+// var data = require("../data");
 
 function User (options) {
     options = options || {};
@@ -18,6 +23,49 @@ function User (options) {
 }
 
 _.extend(User, {
+
+    create: function (data, next) {
+        debug("CREATE: data:", data);
+        var user,
+            validationErrors = User.validate(data);
+
+        if (validationErrors) {
+            throw new Error("Invalid input", validationErrors);
+        }
+
+        user = new User(data);
+
+        // async.series([
+        //     function (next) { // verify username does not exist
+        //
+        //     },
+        //     function (next) { // verify email does not exist
+        //
+        //     },
+        //     function (next) { // hash password
+        //
+        //     },
+        //     function (next) { // save to database
+        //
+        //     }
+        // ], function (err, results) {
+        //
+        // });
+
+        pw.hash(user.password, function (err, hash) {
+            if (err) {
+                throw err;
+            }
+
+            user.password = hash;
+
+            debug("New user created:", user);
+
+            if (next) {
+                next(user);
+            }
+        });
+    },
 
     login: function (username, password, next) {
         // TODO: implement some actual authentication logic here

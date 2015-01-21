@@ -10,7 +10,7 @@ describe("User Model", function () {
     var _user;
 
     beforeEach(function () {
-        _user = new User({ username: "specuser", password: "P@ssw0rd!" });
+        _user = new User({ username: "specuser", password: "P@ssw0rd!", email: "specuser@example.com" });
     });
 
     afterEach(function () {
@@ -106,6 +106,50 @@ describe("User Model", function () {
 
             var results = User.validate(_user);
             expect(results.password).to.exist;
+        });
+
+        it("should require an email value", function () {
+            var results;
+
+            results = User.validate(_user);
+            expect(results).to.be.undefined();
+
+            _user.email = null;
+            results = User.validate(_user);
+            expect(results.email).to.exist;
+        });
+
+        it("should require email to be a valid email address", function () {
+            _user.email = "foo";
+
+            var results = User.validate(_user);
+            expect(results.email).to.exist;
+
+            _user.email = 11;
+
+            var results = User.validate(_user);
+            expect(results.email).to.exist;
+        });
+    });
+
+    describe("Management", function () {
+        it("create function throws error on invalid input", function () {
+            expect(User.create.bind(User, { password: "test" })).to.throw(Error, /Invalid input/);
+        });
+
+        it("create function to hash given password", function (done) {
+            var userData = {
+                username: "testuser",
+                password: "this is a new password",
+                email: "testuser@example.com",
+                firstName: "test",
+                lastName: "user"
+            };
+
+            User.create(userData, function (results) {
+                expect(results.password).to.not.equal(userData.password);
+                done();
+            });
         });
     });
 });
