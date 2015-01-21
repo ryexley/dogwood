@@ -96,7 +96,30 @@ _.extend(User, {
     },
 
     login: function (username, password, next) {
-        // TODO: implement some actual authentication logic here
+        async.waterfall([
+            function (cb) {
+                db.users.findByUsername(username, function (err, results) {
+                    if (results.length) {
+                        var user = _.first(results);
+                        cb(err, user);
+                    } else {
+                        cb(new Error("User not found"), null);
+                    }
+                });
+            },
+            function (err, user, cb) {
+                if (user) {
+                    pw.verify(user.password, password, function (err, isValid) {
+                        if (isValid) {
+                            cb(err, { user: user, authenticated: true });
+                        }
+                    });
+                }
+            }
+        ], function (err, results) {
+            // TODO: check `results.authenticated` and proceed accordingly
+            // Check the `iAm` docs/examples...what do we do now?
+        });
 
         var user;
 
