@@ -52,16 +52,6 @@ describe("User Model", function () {
         expect(_user.isActive).to.be.a("boolean");
     });
 
-    it("should have a created property of the appropriate type", function () {
-        expect(_user.created).to.exist;
-        expect(_user.created).to.be.a("date");
-    });
-
-    it("should have an updated property of the appropriate type", function () {
-        expect(_user.updated).to.exist;
-        expect(_user.updated).to.be.a("date");
-    });
-
     describe("Validation", function () {
         it("should require a username value", function () {
             var results;
@@ -137,7 +127,7 @@ describe("User Model", function () {
             expect(User.create.bind(User, { password: "test" })).to.throw(Error, /Invalid input/);
         });
 
-        it("create function to hash given password", function (done) {
+        xit("create function to hash given password", function (done) {
             var userData = {
                 username: "testuser",
                 password: "this is a new password",

@@ -1,38 +1,50 @@
 "use strict";
 
-var debug = require("debug")("user-data");
+// var debug = require("debug")("user-data");
 var db = require("massive");
+var cnx = require("../config").connectionString();
 
 var user = {
-    create: function (user) {
-        debug("Creating user:", user);
-        db.connect("postgres://ryexley@localhost/dogwood-dev", function (err, db) {
-            db.users.insert({
-                username: "ryexley",
-                password: "foo",
-                email: "bob@yexley.net",
-                firstName: "Bob",
-                lastName: "Yexley"
-            }).execute(function (err, result) {
-                if (err) {
-                    debug("WOOPS! DIDN'T WORK!!", err);
-                }
+    connect: function (next) {
+        db.connect(cnx, function (err, db) {
+            if (next) {
+                next(err, db);
+            }
+        });
+    },
 
-                debug("USER CREATED!", result);
+    create: function (user, next) {
+        this.connect(function (err, db) {
+            db.users.insert(user).execute(function (err, user) {
+                if (next) {
+                    next(err, user);
+                }
             });
         });
     },
 
-    findByUsername: function (username) {
-        debug("Finding user by username:", username);
+    find: function (options, next) {
+        options = options || {};
+
+        this.connect(function (err, db) {
+            db.users.find(options).execute(function (err, users) {
+                if (next) {
+                    next(err, users);
+                }
+            });
+        });
     },
 
-    findById: function (id) {
-        debug("Finding user by id:", id);
+    findByUsername: function (username, next) {
+        this.find({ username: username }, next);
     },
 
-    findByEmail: function (email) {
-        debug("Finding user by email:", email);
+    findById: function (id, next) {
+        this.find({ id: id }, next);
+    },
+
+    findByEmail: function (email, next) {
+        this.find({ email: email }, next);
     }
 };
 

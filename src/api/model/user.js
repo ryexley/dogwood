@@ -1,13 +1,13 @@
 "use strict";
 
 var _ = require("lodash");
-// var async = require("async");
-var debug = require("debug")("user");
+var async = require("async");
+var debug = require("debug")("user-model");
 var validate = require("validate.js");
 var pw = require("credential");
 
 var validationRules = require("../../shared/validation").users;
-// var data = require("../data");
+var db = require("../data");
 
 function User (options) {
     options = options || {};
@@ -18,51 +18,79 @@ function User (options) {
     this.firstName = options.firstName || "";
     this.lastName = options.lastName || "";
     this.isActive = options.isActive || true;
-    this.created = options.created || new Date(-8640000000000000);
-    this.updated = options.updated || new Date(-8640000000000000);
+
+    if (options.created) {
+        this.created = options.created;
+    }
+
+    if (options.updated) {
+        this.updated = options.updated;
+    }
 }
 
 _.extend(User, {
 
-    create: function (data, next) {
-        debug("CREATE: data:", data);
+    create: function (userData, next) {
+        debug("Creating user with data:", userData);
+
         var user,
-            validationErrors = User.validate(data);
+            validationErrors = User.validate(userData);
 
         if (validationErrors) {
             throw new Error("Invalid input", validationErrors);
         }
 
-        user = new User(data);
+        user = new User(userData);
 
-        // async.series([
-        //     function (next) { // verify username does not exist
-        //
-        //     },
-        //     function (next) { // verify email does not exist
-        //
-        //     },
-        //     function (next) { // hash password
-        //
-        //     },
-        //     function (next) { // save to database
-        //
-        //     }
-        // ], function (err, results) {
-        //
-        // });
-
-        pw.hash(user.password, function (err, hash) {
+        async.series({
+            usernameExists: function (cb) {
+                db.users.findByUsername(user.username, function (err, results) {
+                    var usernameExists = results.length;
+                    cb(err, usernameExists);
+                });
+            },
+            emailExists: function (cb) {
+                db.users.findByEmail(user.email, function (err, results) {
+                    var emailExists = results.length;
+                    cb(err, emailExists);
+                });
+            },
+            passwordHash: function (cb) {
+                pw.hash(user.password, function (err, hash) {
+                    cb(err, hash);
+                });
+            }
+        }, function (err, results) {
             if (err) {
-                throw err;
+                debug("ERROR creating user:", err);
+                throw new Error("Error creating user");
             }
 
-            user.password = hash;
+            debug("Create User async results:", results);
 
-            debug("New user created:", user);
+            if (results.usernameExists) {
+                debug("Aborting create user, username already exists");
+                return next(new Error("Username already exists"), null);
+            }
 
-            if (next) {
-                next(user);
+            if (results.emailExists) {
+                debug("Aborting create user, email already in use");
+                return next(new Error("Email address already in use"), null);
+            }
+
+            if (results.passwordHash === user.password) {
+                debug("Aborting create user, password not hashed");
+                return next(new Error("Unable to hash password successfully"), null);
+            }
+
+            if (!results.usernameExists && !results.emailExists) {
+                debug("Username and email unique, password hashed, creating new user");
+                user.password = results.passwordHash;
+                db.users.create(user, function (err, newUser) {
+                    if (next) {
+                        return next(err, newUser);
+                    }
+                });
             }
         });
     },
