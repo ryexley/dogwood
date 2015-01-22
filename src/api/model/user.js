@@ -28,7 +28,90 @@ function User (options) {
     }
 }
 
+function validateUserData (data, done) {
+    debug("Validating data:", data);
+    var validationResults = User.validate(data);
+    done(null, validationResults);
+}
+
+function usernameExists (username, done) {
+    debug("Checking for username:", username);
+    db.users.findByUsername(username, function (err, results) {
+        if (err) {
+            return done(err, null);
+        }
+
+        return done(null, results.length ? true : false);
+    });
+}
+
+function emailExists (email, done) {
+    debug("Checking for email:", email);
+    db.users.findByEmail(email, function (err, results) {
+        if (err) {
+            return done(err, null);
+        }
+
+        return done(null, results.length ? true : false);
+    });
+}
+
+function hashPassword (password, done) {
+    debug("Hashing password:", password);
+    pw.hash(password, function (err, hash) {
+        if (err) {
+            return done(err, null);
+        }
+
+        return done(null, hash);
+    });
+}
+
+function createUser (data, done) {
+    if (data.check.invalidData) {
+        return done(new Error("Invalid input data"), data);
+    }
+
+    if (data.check.usernameExists) {
+        return done(new Error("Username already exists"), data);
+    }
+
+    if (data.check.emailExists) {
+        return done(new Error("Email address already in use"), data);
+    }
+
+    if (data.check.hashedPassword === data.user.password) {
+        return done(new Error("Unable to hash password successfully"), data);
+    }
+
+    if (!data.check.usernameExists && !data.check.emailExists) {
+        data.user.password = data.check.hashedPassword;
+        db.users.create(data.user, function (err, newUser) {
+            if (done) {
+                return done(err, newUser);
+            }
+        });
+    }
+}
+
 _.extend(User, {
+
+    newCreate: function (userData, done) {
+        var canCreateUser = {
+            invalidData: validateUserData.bind(null, userData),
+            usernameExists: usernameExists.bind(null, userData.username),
+            emailExists: emailExists.bind(null, userData.email),
+            hashedPassword: hashPassword.bind(null, userData.password)
+        };
+
+        async.series(canCreateUser, function (err, results) {
+            if (err) {
+                return done(err, results);
+            }
+
+            createUser({ check: results, user: userData }, done);
+        });
+    },
 
     create: function (userData, next) {
         debug("Creating user with data:", userData);
