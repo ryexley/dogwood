@@ -1,5 +1,6 @@
 "use strict";
 
+var debug = require("debug")("api-auth");
 var express = require("express");
 var router = express.Router();
 
@@ -12,6 +13,7 @@ router.post("/login", function (req, res, next) {
 
     User.login(username, password, function (err, result) {
         if (result.authenticated) {
+            debug("Creating user session with user:", result.user);
             req.createUserSession(result.user, function (err) {
                 if (err) {
                     return next(err);
@@ -23,6 +25,11 @@ router.post("/login", function (req, res, next) {
             res.status(401).json({ message: "Login failed" });
         }
     });
+});
+
+router.post("/logout", function (req, res) {
+    req.destroyUserSession();
+    res.json({ message: "Logout successful" });
 });
 
 module.exports = router;
