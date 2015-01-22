@@ -19,7 +19,16 @@ router.post("/login", function (req, res, next) {
                     return next(err);
                 }
 
-                res.json({ message: "Login successful" });
+                res.json({
+                    message: "Login successful",
+                    user: {
+                        id: result.user.id,
+                        username: result.user.username,
+                        email: result.user.email,
+                        firstName: result.user.firstName,
+                        lastName: result.user.lastName
+                    }
+                });
             });
         } else {
             res.status(401).json({ message: "Login failed" });
