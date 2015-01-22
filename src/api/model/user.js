@@ -96,20 +96,20 @@ _.extend(User, {
     },
 
     login: function (username, password, next) {
+        var self = this;
+
         async.waterfall([
             function (cb) {
-                db.users.findByUsername(username, function (err, results) {
-                    if (results.length) {
-                        var user = _.first(results);
-                        cb(err, user);
-                    } else {
-                        cb(new Error("User not found"), null);
-                    }
+                self.findByUsername(username, function (err, user) {
+                    debug("User?", user);
+                    cb(err, user);
                 });
             },
-            function (err, user, cb) {
+            function (user, cb) {
+                debug("Verifying password for user:", user);
                 if (user) {
                     pw.verify(user.password, password, function (err, isValid) {
+                        debug("Password is valid?", isValid);
                         if (isValid) {
                             cb(err, { user: user, authenticated: true });
                         }
@@ -117,29 +117,28 @@ _.extend(User, {
                 }
             }
         ], function (err, results) {
-            // TODO: check `results.authenticated` and proceed accordingly
-            // Check the `iAm` docs/examples...what do we do now?
+            if (err) {
+                // TODO: log the error
+                debug("Authentication error:", err);
+                throw new Error("Login failed");
+            }
+
+            if (results.authenticated) {
+                debug("Authenticated successfully", results);
+                return next(null, results);
+            }
         });
-
-        var user;
-
-        if (username) {
-            user = new User(username, password);
-        }
-
-        next(null, user);
     },
 
     findByUsername: function (username, next) {
-        // TODO: implement some actual username lookup functionality here
-
-        var user;
-
-        if (username) {
-            user = new User(username, "");
-        }
-
-        next(null, user);
+        db.users.findByUsername(username, function (err, results) {
+            if (results.length) {
+                var user = _.first(results);
+                return next(null, user);
+            } else {
+                return next(new Error("User not found"), null);
+            }
+        });
     },
 
     validate: function (target) {

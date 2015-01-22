@@ -1,6 +1,6 @@
 "use strict";
 
-var User = require("../model/user");
+var User = require("../model").user;
 
 var api = {
     getUserToken: function (user, next) {
