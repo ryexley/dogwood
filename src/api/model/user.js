@@ -141,6 +141,17 @@ _.extend(User, {
         });
     },
 
+    findById: function (id, next) {
+        db.users.findById(id, function (err, results) {
+            if (results.length) {
+                var user = _.first(results);
+                return next(null, user);
+            } else {
+                return next(new Error("User not found"), null);
+            }
+        });
+    },
+
     validate: function (target) {
         return validate(target, validationRules);
     }

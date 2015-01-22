@@ -3,23 +3,25 @@
 var User = require("../model").user;
 
 var api = {
-    getUserToken: function (user, next) {
+    getUserToken: function (user, done) {
         var token = {
-            username: user.username
+            id: user.id,
+            username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email
         };
 
-        next(null, token);
+        done(null, token);
     },
 
-    getUserFromToken: function (token, next) {
-        var username = token.username;
-
-        User.findByUsername(username, function (err, user) {
+    getUserFromToken: function (token, done) {
+        User.findById(token.id, function (err, user) {
             if (err) {
-                return next(err);
+                return done(err);
             }
 
-            return next(null, user);
+            return done(null, user);
         });
     }
 };
