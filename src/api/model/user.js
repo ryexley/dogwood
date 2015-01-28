@@ -114,36 +114,25 @@ _.extend(User, {
     },
 
     login: function (username, password, next) {
-        var self = this;
-
-        async.waterfall([
-            function (cb) {
-                self.findByUsername(username, function (err, user) {
-                    debug("User?", user);
-                    cb(err, user);
-                });
-            },
-            function (user, cb) {
-                debug("Verifying password for user:", user);
-                if (user) {
-                    pw.verify(user.password, password, function (err, isValid) {
-                        debug("Password is valid?", isValid);
-                        if (isValid) {
-                            cb(err, { user: user, authenticated: true });
-                        }
-                    });
-                }
-            }
-        ], function (err, results) {
+        this.findByUsername(username, function (err, user) {
             if (err) {
-                // TODO: log the error
-                debug("Authentication error:", err);
-                throw new Error("Login failed");
+                return next(err, null);
             }
 
-            if (results.authenticated) {
-                debug("Authenticated successfully", results);
-                return next(null, results);
+            if (user) {
+                pw.verify(user.password, password, function (err, isValid) {
+                    if (err) {
+                        next(err, null);
+                    }
+
+                    if (isValid) {
+                        next(null, { user: user, authenticated: true });
+                    } else {
+                        next(new Error("Invalid password"), null);
+                    }
+                });
+            } else {
+                next(new Error("User not found"), null);
             }
         });
     },
