@@ -9,6 +9,7 @@ var pw = require("credential");
 var validationRules = require("../../shared/validation").users;
 var db = require("../data");
 
+// User constructor
 function User (options) {
     options = options || {};
 
@@ -28,6 +29,7 @@ function User (options) {
     }
 }
 
+// private functions
 function validateUserData (data, done) {
     var validationResults = User.validate(data);
     done(null, validationResults);
@@ -94,6 +96,7 @@ function createUser (data, done) {
     }
 }
 
+// static User functions
 _.extend(User, {
 
     create: function (userData, done) {
@@ -136,6 +139,24 @@ _.extend(User, {
             }
         });
     },
+
+    // TODO: implement a change password function:
+    // changePassword: function (username, password, newPassword)
+
+    // TODO: implement a forgot password function:
+    // requestPasswordReset: function (email)
+    // logic: should generate and persist a record in the database with a
+    // token and an expiration (configurable, something like 24 hours from
+    // the time the token is generated), and return a URL that contains
+    // the token in it, that can be used to submit an updated password
+
+    // TODO: implement a reset password for forgotten password requests:
+    // resetForgottenPassword: function (passwordResetData)
+    // passwordResetData = {
+    //   token: <- this is the token generated in `requestPasswordReset`, validate that it exists, matches the given email address, and is not expired
+    //   email: <- email address of the user requesting to reset password, validate that it matches the token
+    //   password: <- new password, hash it, and set it on the user object
+    // }
 
     findByUsername: function (username, next) {
         db.users.findByUsername(username, function (err, results) {

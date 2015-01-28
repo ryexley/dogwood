@@ -7,6 +7,11 @@ var router = express.Router();
 var model = require("../model");
 var User = model.user;
 
+router.post("/register", function (/* req, */ res /*, next */) {
+    // TODO: implement user registration logic: call User.create(req.body)
+    res.json({ message: "Not implemented" });
+});
+
 router.post("/login", function (req, res, next) {
     var username = req.body.username,
         password = req.body.password;
