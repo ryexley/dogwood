@@ -22,6 +22,16 @@ var user = {
             });
         });
     },
+    
+    update: function (data, id, next) {
+        this.connect(function (err, db) {
+            db.users.update(data, id).execute(function (err, result) {
+                if (next) {
+                    next(err, result);
+                }
+            });
+        });
+    },
 
     find: function (options, next) {
         options = options || {};

@@ -125,23 +125,56 @@ _.extend(User, {
             if (user) {
                 pw.verify(user.password, password, function (err, isValid) {
                     if (err) {
-                        next(err, null);
+                        return next(err, null);
                     }
 
                     if (isValid) {
-                        next(null, { user: user, authenticated: true });
+                        return next(null, { user: user, authenticated: true });
                     } else {
-                        next(new Error("Invalid password"), null);
+                        return next(new Error("Invalid password"), null);
                     }
                 });
             } else {
-                next(new Error("User not found"), null);
+                return next(new Error("User not found"), null);
             }
         });
     },
 
-    // TODO: implement a change password function:
-    // changePassword: function (username, password, newPassword)
+    changePassword: function (username, password, newPassword, next) {
+        this.findByUsername(username, function (err, user) {
+            if (err) {
+                return next(err, null);
+            }
+
+            if (user) { // the user exists, now lets validate the current password
+                pw.verify(user.password, password, function (err, isValid) {
+                    if (err) {
+                        return next(err, null);
+                    }
+
+                    if (isValid) { // current password is valid, update password
+                        hashPassword(newPassword, function (err, hash) {
+                            // TODO: convert this updated date to a UTC date
+                            db.users.update({ password: hash, updated: new Date() }, user.id, function (err, result) {
+                                if (err) {
+                                    return next(err, null);
+                                }
+
+                                debug("Update result:", result);
+                                if (result && result.rowCount) {
+                                    return next(null, { updates: result, passwordUpdated: true });
+                                }
+                            });
+                        });
+                    } else {
+                        return next(new Error("Invalid password"), null);
+                    }
+                });
+            } else {
+                return next(new Error("User not found"), null);
+            }
+        });
+    },
 
     // TODO: implement a forgot password function:
     // requestPasswordReset: function (email)

@@ -3,8 +3,10 @@
 var debug = require("debug")("api-auth");
 var express = require("express");
 var router = express.Router();
+var validate = require("validate.js");
 
 var model = require("../model");
+var validationRules = require("../../shared/validation").auth;
 var User = model.user;
 
 router.post("/register", function (req, res, next) {
@@ -38,7 +40,12 @@ router.post("/login", function (req, res, next) {
         password = req.body.password;
 
     User.login(username, password, function (err, result) {
-        if (result.authenticated) {
+        if (err) {
+            next(err, null);
+        }
+
+        debug("User login result:", result);
+        if (result && result.authenticated) {
             debug("Creating user session with user:", result.user);
             req.createUserSession(result.user, function (err) {
                 if (err) {
@@ -65,6 +72,32 @@ router.post("/login", function (req, res, next) {
 router.post("/logout", function (req, res) {
     req.destroyUserSession();
     res.json({ message: "Logout successful" });
+});
+
+router.post("/change-password", function (req, res, next) {
+    var validationResults = validate(req.body, validationRules.changePassword);
+
+    if (validationRules.length) {
+        res.status(400).json({
+            status: "Error",
+            message: "Invalid data",
+            errors: validationResults
+        });
+    } else {
+        User.changePassword(req.body.username, req.body.password, req.body.newPassword, function (err, results) {
+            if (err) {
+                next(err, null);
+            }
+
+            debug("Change password results:", results);
+
+            if (results && results.passwordUpdated) {
+                res.json({ status: "success", message: "Password successfully updated" });
+            } else {
+                res.status(500).json({ status: "error", message: "Error updating password" });
+            }
+        });
+    }
 });
 
 module.exports = router;
