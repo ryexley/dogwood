@@ -7,9 +7,30 @@ var router = express.Router();
 var model = require("../model");
 var User = model.user;
 
-router.post("/register", function (/* req, */ res /*, next */) {
-    // TODO: implement user registration logic: call User.create(req.body)
-    res.json({ message: "Not implemented" });
+router.post("/register", function (req, res, next) {
+    User.create(req.body, function (err, result) {
+        if (err) {
+            return next(err, null);
+        }
+
+        if (result && result.length) {
+            var newUser = result[0];
+
+            res.json({
+                status: "success",
+                message: "User created successfully",
+                user: {
+                    id: newUser.id,
+                    username: newUser.username,
+                    email: newUser.email,
+                    firstName: newUser.firstName,
+                    lastName: newUser.lastName
+                }
+            });
+        } else {
+            res.status(500).json({ message: "Error creating user" });
+        }
+    });
 });
 
 router.post("/login", function (req, res, next) {
