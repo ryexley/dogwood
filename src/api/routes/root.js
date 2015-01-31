@@ -6,7 +6,7 @@ var router = express.Router();
 
 router.get("/", function (req, res) {
     debug("Logged in user:", req.user);
-    res.json({ message: "Dogwood API" });
+    res.success({ message: "Dogwood API" });
 });
 
 module.exports = router;

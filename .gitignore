@@ -24,4 +24,6 @@ node_modules
 npm-debug.log
 
 src/api/config/dev.database.json
+src/api/config/int.database.json
 src/api/config/dev.config.json
+src/api/config/int.config.json

@@ -1,5 +1,16 @@
-/* https://github.com/derickbailey/iam/tree/master/demo */
-/* https://github.com/ericelliott/credential */
+/*
+    TODO: Take a look at implementing some of the ideas in this repo:
+    https://github.com/lelandrichardson/viki
+
+    Specifically, how the express configuration is stored in `src/server/config/express.js`
+    and then pulled in to server.js at runtime. Nice and clean.
+
+    Also, I like the pattern of appending common `success` and `error` functions
+    to the `express.response` object in the express configuration.
+
+    I like how these functions can be used in route handlers to return a consistent
+    response envelope/structure for requests.
+*/
 
 "use strict";
 
@@ -8,6 +19,31 @@ var logger = require("morgan");
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 var session = require("express-session");
+
+// common response extension functions to facilitate a common response pattern
+express.response.success = function (options) {
+    options = options || {};
+
+    return this.json({
+        success: true,
+        statusCode: options.statusCode || 200,
+        message: options.message || null,
+        data: options.data || null,
+        _links: options.links || null
+    });
+};
+
+express.response.error = function (options) {
+    options = options || {};
+
+    return this.status(options.statusCode || 500).json({
+        success: false,
+        statusCode: options.statusCode || 500,
+        message: options.message || options.err.message || null,
+        data: options.data || null,
+        _links: options.links || null
+    });
+};
 
 var app = express();
 

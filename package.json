@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "api-dev": "DEBUG=* node-dev ./src/api/bin/api",
     "start": "DEBUG=* node ./src/api/bin/api",
     "test": "./node_modules/mocha/bin/mocha --reporter spec --bail --check-leaks spec/",
+    "integration-tests": "DEBUG=integration-tests ./node_modules/mocha/bin/mocha --reporter spec --bail --check-leaks spec/integration",
     "coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -x 'spec/**/*' -- --reporter spec --bail --check-leaks spec/",
     "show-coverage": "open ./coverage/lcov-report/index.html"
   },
@@ -24,6 +26,7 @@
     "lodash": "2.4.1",
     "morgan": "1.5.1",
     "pg": "4.2.0",
+    "superagent": "^0.21.0",
     "validate.js": "0.3.2"
   },
   "devDependencies": {
@@ -39,6 +42,8 @@
     "jshint-stylish": "1.0.0",
     "load-grunt-config": "0.16.0",
     "mocha": "2.1.0",
+    "node-dev": "^2.6.0",
+    "shelljs": "^0.3.0",
     "time-grunt": "1.0.0"
   }
 }
