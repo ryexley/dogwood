@@ -1,11 +1,12 @@
 "use strict";
 
-// var debug = require("debug")("user-data");
+var debug = require("debug")("user-data");
 var db = require("massive");
 var cnx = require("../config").connectionString();
 
 var user = {
     connect: function (next) {
+        debug("Connection string:", cnx);
         db.connect(cnx, function (err, db) {
             if (next) {
                 next(err, db);
@@ -22,7 +23,7 @@ var user = {
             });
         });
     },
-    
+
     update: function (data, id, next) {
         this.connect(function (err, db) {
             db.users.update(data, id).execute(function (err, result) {

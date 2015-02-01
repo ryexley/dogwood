@@ -3,8 +3,11 @@
 var _ = require("lodash");
 var fs = require("fs");
 var path = require("path");
+var debug = require("debug")("config");
 
 var env = process.env.NODE_ENV || "dev";
+
+debug("ENV!!", env);
 
 var defaultConfig = {};
 var envConfig = {};
