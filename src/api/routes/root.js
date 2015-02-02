@@ -1,6 +1,6 @@
 "use strict";
 
-var debug = require("debug")("api-root");
+var debug = require("debug")("dogwood:api:root");
 var express = require("express");
 var router = express.Router();
 

@@ -3,9 +3,9 @@ var chai = require("chai");
 var expect = chai.expect;
 var should = chai.should;
 var assert = chai.assert;
-var debug = require("debug")("integration-tests");
+var debug = require("debug")("dogwood:tests:integration");
 var cp = require("child_process");
-var kill = require("tree-kill");
+var killTree = require("tree-kill");
 var shell = require("shelljs");
 var request = require("superagent");
 
@@ -30,27 +30,32 @@ function resetEnv () {
 
 function startAPI () {
     api = cp.spawn("node", [process.cwd() + "/src/api/bin/api"], { stdio: "pipe" });
-    api.stdout.on("data", function (data) {
-        debug("API:", data);
-    });
-    api.stderr.on("data", function (data) {
-        debug("API ERROR:", data);
-    });
-    api.on("close", function (code) {
-        debug("API CLOSED with exit code:", code);
-    });
+    // api.stdout.on("data", function (data) {
+    //     debug("API:", data.toString());
+    // });
+    // api.stderr.on("data", function (data) {
+    //     debug("API ERROR:", data.toString());
+    // });
+    // api.on("close", function (code) {
+    //     debug("API CLOSED with exit code:", code);
+    // });
 }
 
 function stopAPI () {
-    kill(api.pid, "SIGKILL");
+    killTree(api.pid, "SIGKILL");
 }
 
 describe("IntegrationTests", function () {
 
-    before(function () {
+    before(function (done) {
         setEnv();
         shell.exec("grunt db:migrate:up", { silent: true });
         startAPI();
+
+        // this.timeout(5000);
+        // TODO: seems like there should be an event we can subscribe to instead of this
+        // pause for a half second to let the API start up before running tests against it
+        setTimeout(done, 500);
     });
 
     after(function () {
@@ -71,7 +76,7 @@ describe("IntegrationTests", function () {
 
         describe("Auth", function () {
 
-            xit ("can register a user", function (done) {
+            it("should successfully register a user with valid input data", function (done) {
                 request
                     .post(routes.apiRoot + routes.auth.createUser)
                     .send({
@@ -79,8 +84,30 @@ describe("IntegrationTests", function () {
                         password: "P@s$w0rd!",
                         email: "test@example.com"
                     })
+                    .on("error", function (err) {
+                        debug("ERROR!", err);
+                    })
                     .end(function (res) {
                         expect(res.body.success).to.be.true;
+                        done();
+                    });
+            });
+
+            it("should error when attempting to register a user without a username", function (done) {
+                request
+                    .post(routes.apiRoot + routes.auth.createUser)
+                    .send({
+                        password: "P@s$w0rd!",
+                        email: "test@example.com",
+                        firstName: "Test",
+                        lastName: "User"
+                    })
+                    .on("error", function (err) {
+                        debug("ERROR!", err);
+                    })
+                    .end(function (res) {
+                        expect(res.body.success).to.be.false;
+                        expect(res.body.statusCode).to.equal(500);
                         done();
                     });
             });

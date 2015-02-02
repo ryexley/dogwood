@@ -1,6 +1,6 @@
 "use strict";
 
-var debug = require("debug")("api-auth");
+var debug = require("debug")("dogwood:api:auth");
 var express = require("express");
 var router = express.Router();
 var validate = require("validate.js");
@@ -12,16 +12,21 @@ var User = model.user;
 router.post("/register", function (req, res, next) {
     User.create(req.body, function (err, result) {
         if (err) {
-            return next(err, null);
+            debug("User.create error!", err);
+            // return next(err, null);
+            return res.error({
+                statusCode: 500,
+                message: "Error registering user",
+                data: err
+            });
         }
 
         if (result && result.length) {
             var newUser = result[0];
 
-            res.json({
-                status: "success",
+            return res.success({
                 message: "User created successfully",
-                user: {
+                data: {
                     id: newUser.id,
                     username: newUser.username,
                     email: newUser.email,
@@ -30,7 +35,11 @@ router.post("/register", function (req, res, next) {
                 }
             });
         } else {
-            res.status(500).json({ message: "Error creating user" });
+            debug("No user created!");
+            return res.error({
+                statusCode: 500,
+                message: "Error creating user"
+            });
         }
     });
 });
