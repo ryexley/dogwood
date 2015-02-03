@@ -5,6 +5,7 @@ var should = chai.should;
 var assert = chai.assert;
 var debug = require("debug")("dogwood:tests:integration");
 var cp = require("child_process");
+var net = require("net");
 var killTree = require("tree-kill");
 var shell = require("shelljs");
 var request = require("superagent");
@@ -29,19 +30,37 @@ function resetEnv () {
 }
 
 function startAPI () {
-    api = cp.spawn("node", [process.cwd() + "/src/api/bin/api"], { stdio: "pipe" });
-    // api.stdout.on("data", function (data) {
-    //     debug("API:", data.toString());
-    // });
-    // api.stderr.on("data", function (data) {
-    //     debug("API ERROR:", data.toString());
-    // });
-    // api.on("close", function (code) {
-    //     debug("API CLOSED with exit code:", code);
-    // });
+    debug("Starting API for test...");
+    api = cp.fork(process.cwd() + "/src/api/bin/api");
+}
+
+function waitForApi (done) {
+    debug("Waiting for API...");
+    var socket = new net.Socket();
+    socket.setTimeout(1000);
+
+    var tryConnect = function () {
+        socket.connect(7000, "localhost");
+    };
+
+    socket
+        .on("connect", function () {
+            debug("Connected to API...");
+            socket.destroy();
+            done();
+        })
+        .on("error", function (err) {
+            setTimeout(tryConnect, 500);
+        })
+        .on("timeout", function () {
+            setTimeout(tryConnect, 500);
+        });
+
+    tryConnect();
 }
 
 function stopAPI () {
+    debug("Shutting down API...");
     killTree(api.pid, "SIGKILL");
 }
 
@@ -51,11 +70,9 @@ describe("IntegrationTests", function () {
         setEnv();
         shell.exec("grunt db:migrate:up", { silent: true });
         startAPI();
+        waitForApi(done);
 
-        // this.timeout(5000);
-        // TODO: seems like there should be an event we can subscribe to instead of this
-        // pause for a half second to let the API start up before running tests against it
-        setTimeout(done, 500);
+        this.timeout(5000);
     });
 
     after(function () {

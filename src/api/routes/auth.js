@@ -9,7 +9,7 @@ var model = require("../model");
 var validationRules = require("../../shared/validation").auth;
 var User = model.user;
 
-router.post("/register", function (req, res, next) {
+router.post("/register", function (req, res /*, next */) {
     User.create(req.body, function (err, result) {
         if (err) {
             debug("User.create error!", err);

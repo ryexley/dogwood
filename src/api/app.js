@@ -14,6 +14,7 @@
 
 "use strict";
 
+var debug = require("debug")("dogwood");
 var express = require("express");
 var logger = require("morgan");
 var cookieParser = require("cookie-parser");
