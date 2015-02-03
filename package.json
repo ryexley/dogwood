@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "api-dev": "DEBUG=* node-dev ./src/api/bin/api",
-    "start": "DEBUG=* node ./src/api/bin/api",
+    "api-dev": "DEBUG=dogwood* node-dev ./src/api/bin/api",
+    "start": "DEBUG=dogwood* node ./src/api/bin/api",
     "test": "./node_modules/mocha/bin/mocha --reporter spec --bail --check-leaks spec/",
-    "integration-tests": "DEBUG=dogwood:*,dogwood:tests:*,dogwood:api:* ./node_modules/mocha/bin/mocha --reporter spec --bail --check-leaks spec/integration",
+    "integration-tests": "DEBUG=dogwood:tests*,dogwood:api* ./node_modules/mocha/bin/mocha --reporter spec --bail --check-leaks spec/integration",
     "coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -x 'spec/**/*' -- --reporter spec --bail --check-leaks spec/",
     "show-coverage": "open ./coverage/lcov-report/index.html"
   },

@@ -1,6 +1,6 @@
 "use strict";
 
-var debug = require("debug")("user-data");
+var debug = require("debug")("dogwood:data:user");
 var db = require("massive");
 var cnx = require("../config").connectionString();
 

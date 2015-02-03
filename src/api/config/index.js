@@ -3,7 +3,7 @@
 var _ = require("lodash");
 var fs = require("fs");
 var path = require("path");
-var debug = require("debug")("config");
+var debug = require("debug")("dogwood:config");
 
 var env = process.env.NODE_ENV || "dev";
 
