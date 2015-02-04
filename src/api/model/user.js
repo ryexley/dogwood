@@ -2,7 +2,7 @@
 
 var _ = require("lodash");
 var async = require("async");
-var debug = require("debug")("user-model");
+var debug = require("debug")("dogwood:model:user");
 var validate = require("validate.js");
 var pw = require("credential");
 

@@ -12,12 +12,10 @@ var User = model.user;
 router.post("/register", function (req, res /*, next */) {
     User.create(req.body, function (err, result) {
         if (err) {
-            debug("User.create error!", err);
-            // return next(err, null);
             return res.error({
                 statusCode: 500,
                 message: "Error registering user",
-                data: err
+                data: err.message
             });
         }
 
@@ -50,20 +48,22 @@ router.post("/login", function (req, res, next) {
 
     User.login(username, password, function (err, result) {
         if (err) {
-            next(err, null);
+            return res.error({
+                statusCode: 500,
+                message: "Authentication failed",
+                data: err.message
+            });
         }
 
-        debug("User login result:", result);
         if (result && result.authenticated) {
-            debug("Creating user session with user:", result.user);
             req.createUserSession(result.user, function (err) {
                 if (err) {
                     return next(err);
                 }
 
-                res.json({
-                    message: "Login successful",
-                    user: {
+                res.success({
+                    message: "Authentication success",
+                    data: {
                         id: result.user.id,
                         username: result.user.username,
                         email: result.user.email,
@@ -73,14 +73,17 @@ router.post("/login", function (req, res, next) {
                 });
             });
         } else {
-            res.status(401).json({ message: "Login failed" });
+            res.error({
+                statusCode: 401,
+                message: "Authentication failed"
+            });
         }
     });
 });
 
 router.post("/logout", function (req, res) {
     req.destroyUserSession();
-    res.json({ message: "Logout successful" });
+    res.success({ message: "Logout successful" });
 });
 
 router.post("/change-password", function (req, res, next) {
