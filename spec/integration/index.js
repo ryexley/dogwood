@@ -1,4 +1,5 @@
 var helper = require("./helper");
+rootTests = require("./root");
 var authTests = require("./auth");
 
 describe("IntegrationTests", function () {
@@ -22,6 +23,7 @@ describe("IntegrationTests", function () {
 
     describe("Dogwood API", function () {
 
+        rootTests();
         authTests();
 
     });
